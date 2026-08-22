@@ -327,6 +327,13 @@
                     snippet: "experience with my fav rhythm game"
                 });
             }
+            if (query.includes("friend") || query.includes("shrine") || query.includes("death") || query.includes("love") || query.includes("cj")) {
+                keywordLinks.push({
+                    title: "CATHERINE JANE MOFFETT 2007-2024",
+                    url: "/cj",
+                    snippet: "ILYSM<33333"
+                });
+            }
 
             let totalCount = matchedKeys.length + keywordLinks.length;
             document.getElementById('result-count').innerText = totalCount;
