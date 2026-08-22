@@ -172,9 +172,9 @@
 
         const DATABASE = {
             "line_generator": {
-                keywords: "line generator thought trajectory canvas drawing pattern graph mapping visualizer chart database query",
+                keywords: "line generator thought trajectory canvas drawing pattern graph mapping visualizer database query",
                 title: "Cognitive Trajectory Mapper",
-                url: "/trajectory",
+                url: "http://tools.aleph/trajectory.exe",
                 snippet: "generate a completely new multi-point line graph trajectory every time you click...",
                 content: `
                     <div style="padding: 20px; text-align: center;">
@@ -199,26 +199,26 @@
                 snippet: "vivi's 2024-2026 diary :3"
             },
             {
-                keywords: "philosophy chaos egregore feeding rituals occult magic vivi",
+                keywords: "philosophy chaos egregore feeding rituals occult magic thoughts vent rant angel vivi",
                 title: "FEED DA EGREGORE.",
                 url: "/gen",
                 snippet: "a neat little thought cycler."
             },
             {
                 keywords: "lastfm audio music mu",
-                title: "Music blog",
+                title: "Music diary",
                 url: "/fm",
                 snippet: "billions must scrobble"
             },
             {
                 keywords: "cd compact disc physical media catalog archive music",
-                title: "vivi's pretty small realy cool CD collection",
+                title: "pretty small realy cool CD collection",
                 url: "/cd",
                 snippet: "my CD collection catalogued!"
             },
             {
-                keywords: "strawberry switchblade shrine yuri 80s gothic synthpop band music",
-                title: "STRAWBERRY SWITCHBLADE",
+                keywords: "strawberry switchblade shrine doomed yuri 80s gothic synthpop band music anxiety occult neofolk fashion",
+                title: "❀ STRAWBERRY SWITCHBLADE ❀",
                 url: "/shrine/ss",
                 snippet: "IT'S SO CLEAR THAT ALL WE HAVE NOW ARE OUR THOUGHTS OF YESTERDAY"
             },
@@ -229,25 +229,25 @@
                 snippet: "is it okay if we only sit here for awhile?"
             },
             {
-                keywords: "existential philosophy art blog thought idea death suicide",
-                title: "stagnation vs decay vs creation ...= the same?",
+                keywords: "existential philosophy art rant theory blog thought idea death suicide",
+                title: "to Create is to Stagnate is to Die",
                 url: "/pain",
-                snippet: "Existential crisis or epistemology slop? take a guess"
+                snippet: "Existential crisis or epistemology slop? take your guess"
             },
             {
-                keywords: "hospital angel suicide trauma sickness death",
+                keywords: "hospital angel suicide trauma sickness death dead sad pain alone help sorry",
                 title: "Hospital",
                 url: "/hopital",
-                snippet: "dont expect any help, for all the beds are full...but if you're a visitor, by all means, we could use those... angel suicide"
+                snippet: "dont expect any help, for all the beds are full...but if you're a visitor, by all means, we could use those..."
             },
             {
-                keywords: "digital tech gnosticism religion pagan manifesto vivi philosophy rant blog",
+                keywords: "digital tech gnosticism religion pagan manifesto philosophy rant theory guide",
                 title: "DIGITAL SOLIPSISM FOR DUMMIES:RECLAIM YOUR ECHO CHAMBER",
                 url: "/ryec",
                 snippet: "one closed feedback loop now for half the price! ARCHONS WEARING GORILLA GLA$$: THE DEMIURGE IS AN ALGORITHMIC FEED. PROLOGUE: THE SILICON COCKPIT ANCIEN..."
             },
             {
-                keywords: "lain serial experiments wired shrine god tech religion philosophy ok hi lol worship anime",
+                keywords: "lain serial experiments wired shrine god tech religion philosophy analysis ok hi lol worship anime",
                 title: "ENTER WIRED // Serial Experiments Lain",
                 url: "/shrine/lain",
                 snippet: "What does it take to make you realize digital deities are real? Do you really not know masturbating to your Touhous is a worship ritual manifesting their existence libidinally? The suspension of disbelief..."
@@ -258,12 +258,30 @@
                 url: "/shrine/pd",
                 snippet: "my fav rhythm game"
             },
+			{
+                keywords: "pictures images egregore image occult philosophy lol",
+                title: "Hyperstition",
+                url: "/hyperstition",
+                snippet: ""
+            },
             {
                 keywords: "catherine jane moffett friend shrine death love memorial cj",
                 title: "CATHERINE JANE MOFFETT 2007-2024",
                 url: "/cj",
                 snippet: "ILYSM<33333"
-            }
+            },
+			{
+                keywords: "art",
+                title: "UNtitled",
+                url: "/21/0722",
+                snippet: "plss take me with you i wont make any noise.july 22,2021.next"
+            },
+			{
+                keywords: "art",
+                title: "UNtitled",
+                url: "/21/1101",
+                snippet: "i spent every second of very hour thinking hoping wishin praying U cud think of me jut 1% as much as i do u that woud be enough for me. i wanted to try public school but that doesnt mean i do ntt have ..."
+            },
         ];
 
         let thoughtCtx = null;
@@ -307,66 +325,76 @@
             renderResults(query);
         }
 
-        function renderResults(query) {
-            const container = document.getElementById('results-container');
-            container.innerHTML = '';
+function renderResults(query) {
+    const container = document.getElementById('results-container');
+    container.innerHTML = '';
 
-            let queryTokens = query.split(/\s+/).filter(Boolean);
+    let queryTokens = query.split(/\s+/).filter(Boolean);
 
-            let matchedKeys = Object.keys(DATABASE).filter(k => {
-                let d = DATABASE[k];
-                let searchStr = (d.title + " " + d.url + " " + d.snippet + " " + (d.keywords || "")).toLowerCase();
-                return queryTokens.every(token => searchStr.includes(token));
-            });
-
-            let matchedExternalLinks = EXTERNAL_LINKS.filter(link => {
-                let searchStr = (link.title + " " + link.url + " " + link.snippet + " " + (link.keywords || "")).toLowerCase();
-                return queryTokens.every(token => searchStr.includes(token));
-            });
-
-            let totalCount = matchedKeys.length + matchedExternalLinks.length;
-            document.getElementById('result-count').innerText = totalCount;
-
-            if (totalCount === 0) {
-                container.innerHTML = `
-                    <div class="window-panel" style="background: white; color: black; font-weight: bold;">
-                        No documents matched the query. The trail goes cold.
-                    </div>
-                `;
-                return;
-            }
-
-            for(let i=0; i < matchedKeys.length; i++) {
-                let key = matchedKeys[i];
-                let data = DATABASE[key];
-
-                let item = document.createElement('div');
-                item.className = 'window-panel result-item';
-
-                item.innerHTML = `
-                    <div class="result-title"><a class="nav-link" data-target="${key}">${data.title}</a></div>
-                    <div class="result-url">${data.url}</div>
-                    <div class="result-snippet">${data.snippet}</div>
-                `;
-                container.appendChild(item);
-            }
-
-            for(let k=0; k < matchedExternalLinks.length; k++) {
-                let linkData = matchedExternalLinks[k];
-
-                let item = document.createElement('div');
-                item.className = 'window-panel result-item';
-
-                item.innerHTML = `
-                    <div class="result-title"><a href="${linkData.url}" target="_blank" rel="noopener noreferrer">${linkData.title}</a></div>
-                    <div class="result-url">${linkData.url}</div>
-                    <div class="result-snippet">${linkData.snippet}</div>
-                `;
-                container.appendChild(item);
-            }
-
-            attachNavListeners();
+    // test if a token matches the combined string targets
+    function tokenMatches(token, targetStr) {
+        if (token.length < 3) {
+            let regex = new RegExp(`\\b${token}\\b`, 'i');
+            return regex.test(targetStr);
         }
+        return targetStr.toLowerCase().includes(token.toLowerCase());
+    }
+
+    let matchedKeys = Object.keys(DATABASE).filter(k => {
+        let d = DATABASE[k];
+        let searchStr = (d.title + " " + d.url + " " + d.snippet + " " + (d.keywords || "")).toLowerCase();
+        return queryTokens.every(token => tokenMatches(token, searchStr));
+    });
+
+    let matchedExternalLinks = EXTERNAL_LINKS.filter(link => {
+        let searchStr = (link.title + " " + link.url + " " + link.snippet + " " + (link.keywords || "")).toLowerCase();
+        return queryTokens.every(token => tokenMatches(token, searchStr));
+    });
+
+    let totalCount = matchedKeys.length + matchedExternalLinks.length;
+    document.getElementById('result-count').innerText = totalCount;
+
+    if (totalCount === 0) {
+        container.innerHTML = `
+            <div class="window-panel" style="background: white; color: black; font-weight: bold;">
+                No documents matched the query. The trail goes cold.
+            </div>
+        `;
+        return;
+    }
+
+    for(let i=0; i < matchedKeys.length; i++) {
+        let key = matchedKeys[i];
+        let data = DATABASE[key];
+
+        let item = document.createElement('div');
+        item.className = 'window-panel result-item';
+
+        item.innerHTML = `
+            <div class="result-title"><a class="nav-link" data-target="${key}">${data.title}</a></div>
+            <div class="result-url">${data.url}</div>
+            <div class="result-snippet">${data.snippet}</div>
+        `;
+        container.appendChild(item);
+    }
+
+    for(let k=0; k < matchedExternalLinks.length; k++) {
+    let linkData = matchedExternalLinks[k];
+
+    let item = document.createElement('div');
+    item.className = 'window-panel result-item';
+
+   
+    item.innerHTML = `
+        <div class="result-title"><a href="${linkData.url}">${linkData.title}</a></div>
+        <div class="result-url">${linkData.url}</div>
+        <div class="result-snippet">${linkData.snippet}</div>
+    `;
+    container.appendChild(item);
+}
+
+    attachNavListeners();
+}
 
         function nav(pageId) {
             if(!DATABASE[pageId]) return;
@@ -442,28 +470,7 @@
             let step = c.width / (points - 1);
             let coords = [];
 
-            // occassional chaos lol
-            let isChaotic = Math.random() < 0.15;
-            let currentY = c.height / 2;
-
-            for (let i = 0; i < points; i++) {
-                let x = i * step;
-                let y;
-
-                if (isChaotic) {
-                    y = 30 + Math.random() * (c.height - 60);
-                } else {
-                    // Smoothed walk pattern with small variances
-                    let delta = (Math.random() - 0.5) * 35;
-                    currentY += delta;
-                    if (currentY < 30) currentY = 30 + Math.random() * 15;
-                    if (currentY > c.height - 30) currentY = c.height - 30 - Math.random() * 15;
-                    y = currentY;
-                }
-
-                coords.push({x, y});
-            }
-
+            
             // graph line
             thoughtCtx.strokeStyle = '#000080';
             thoughtCtx.lineWidth = 1.5;
