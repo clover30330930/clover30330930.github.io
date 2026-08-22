@@ -16,7 +16,7 @@
         a { color: #0000EE; text-decoration: underline; cursor: pointer; }
         a:visited { color: #551A8B; }
         a:active { color: #EE0000; }
-        
+
         a.drifting {
             display: inline-block;
             animation: drift 10s infinite alternate ease-in-out;
@@ -29,7 +29,6 @@
             100% { transform: translate(8px, 12px); }
         }
 
-        
         .window-panel {
             background: #c0c0c0;
             border-top: 2px solid #ffffff;
@@ -128,12 +127,11 @@
             border: 2px inset #ffffff;
         }
     </style>
-   
+
     <style id="page-custom-css"></style>
 </head>
 <body>
 
-    
     <div id="top-bar">
         <b id="home-logo-btn" style="cursor:pointer; letter-spacing: 2px;">ALEPH</b>
         <input type="text" id="top-search-input" value="">
@@ -154,7 +152,6 @@
             <marquee width="400" style="font-family: monospace; color: #555;">Search for keywords to navigate!</marquee>
         </div>
 
-        
         <div id="results-view">
             <div class="window-panel" style="margin-bottom: 20px; display: inline-block;">
                 Found <span id="result-count">0</span> fragments for: <b id="query-display"></b>
@@ -162,7 +159,6 @@
             <div id="results-container"></div>
         </div>
 
-        
         <div id="page-view"></div>
     </div>
 
@@ -176,7 +172,7 @@
 
         const DATABASE = {
             "line_generator": {
-                keywords: "line generator thought trajectory canvas drawing pattern graph",
+                keywords: "line generator thought trajectory canvas drawing pattern graph mapping visualizer chart database query",
                 title: "Cognitive Trajectory Mapper",
                 url: "http://tools.aleph/trajectory.exe",
                 snippet: "generate a completely new multi-point line graph trajectory every time you click...",
@@ -189,11 +185,86 @@
                         <br><br>
                         <button class="os-btn" onclick="drawThoughtGraph()" style="padding: 10px; font-weight: bold;">Generate New Line Graph</button>
                         <button class="os-btn" onclick="clearThoughts()">Clear Memory</button>
-                        <p style="font-size: 12px; font-family: monospace;">Logging chaotic pathways...</p>
+                        <p style="font-size: 12px; font-family: monospace;">i like to try to make the line end upwards or downwards with power of thought alone</p>
                     </div>
                 `
             }
         };
+
+        const EXTERNAL_LINKS = [
+            {
+                keywords: "diary journal thoughts webmaster thinking personal blog vivi forum happy",
+                title: "/diary/ - the webmaster is thinking",
+                url: "/diary",
+                snippet: "vivi's 2024-2026 diary :3"
+            },
+            {
+                keywords: "philosophy chaos egregore feeding rituals occult magic vivi",
+                title: "FEED DA EGREGORE.",
+                url: "/gen",
+                snippet: "a neat little thought cycler."
+            },
+            {
+                keywords: "lastfm audio music mu",
+                title: "Music blog",
+                url: "/fm",
+                snippet: "billions must scrobble"
+            },
+            {
+                keywords: "cd compact disc physical media catalog archive music",
+                title: "vivi's pretty small realy cool CD collection",
+                url: "/cd",
+                snippet: "my CD collection catalogued!"
+            },
+            {
+                keywords: "strawberry switchblade shrine yuri 80s gothic synthpop band music",
+                title: "STRAWBERRY SWITCHBLADE",
+                url: "/shrine/ss",
+                snippet: "IT'S SO CLEAR THAT ALL WE HAVE NOW ARE OUR THOUGHTS OF YESTERDAY"
+            },
+            {
+                keywords: "music lastfm vivi home main cats",
+                title: "CAT'S CRADLE",
+                url: "/mu",
+                snippet: "is it okay if we only sit here for awhile?"
+            },
+            {
+                keywords: "existential philosophy art blog thought idea death suicide",
+                title: "stagnation vs decay vs creation ...= the same?",
+                url: "/pain",
+                snippet: "Existential crisis or epistemology slop? take a guess"
+            },
+            {
+                keywords: "hospital angel suicide trauma sickness death",
+                title: "Hospital",
+                url: "/hopital",
+                snippet: "dont expect any help, for all the beds are full...but if you're a visitor, by all means, we could use those... angel suicide"
+            },
+            {
+                keywords: "digital tech gnosticism religion pagan manifesto vivi philosophy rant blog",
+                title: "DIGITAL SOLIPSISM FOR DUMMIES:RECLAIM YOUR ECHO CHAMBER",
+                url: "/ryec",
+                snippet: "one closed feedback loop now for half the price! ARCHONS WEARING GORILLA GLA$$: THE DEMIURGE IS AN ALGORITHMIC FEED. PROLOGUE: THE SILICON COCKPIT ANCIEN..."
+            },
+            {
+                keywords: "lain serial experiments wired shrine god tech religion philosophy ok hi lol worship anime",
+                title: "ENTER WIRED // Serial Experiments Lain",
+                url: "/shrine/lain",
+                snippet: "What does it take to make you realize digital deities are real? Do you really not know masturbating to your Touhous is a worship ritual manifesting their existence libidinally? The suspension of disbelief..."
+            },
+            {
+                keywords: "project diva hatsune miku vocaloid rhythm game music shrine arcade gaming games",
+                title: "PROJECT DIVA",
+                url: "/shrine/pd",
+                snippet: "my fav rhythm game"
+            },
+            {
+                keywords: "catherine jane moffett friend shrine death love memorial cj",
+                title: "CATHERINE JANE MOFFETT 2007-2024",
+                url: "/cj",
+                snippet: "ILYSM<33333 friend shrine death love cj"
+            }
+        ];
 
         let thoughtCtx = null;
 
@@ -223,10 +294,10 @@
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('page-view').style.display = 'none';
             document.getElementById('top-bar').style.display = 'flex';
-            
+
             let resView = document.getElementById('results-view');
             resView.style.display = 'block';
-            
+
             let randomBg = SEARCH_BGS[Math.floor(Math.random() * SEARCH_BGS.length)];
             resView.style.backgroundImage = randomBg;
 
@@ -240,102 +311,20 @@
             const container = document.getElementById('results-container');
             container.innerHTML = '';
 
-            let keys = Object.keys(DATABASE);
-            
-            let matchedKeys = keys.filter(k => {
+            let queryTokens = query.split(/\s+/).filter(Boolean);
+
+            let matchedKeys = Object.keys(DATABASE).filter(k => {
                 let d = DATABASE[k];
-                let searchStr = (d.title + " " + d.snippet + " " + d.keywords).toLowerCase();
-                let queryWords = query.split(" ");
-                return queryWords.every(word => searchStr.includes(word));
+                let searchStr = (d.title + " " + d.url + " " + d.snippet + " " + (d.keywords || "")).toLowerCase();
+                return queryTokens.every(token => searchStr.includes(token));
             });
 
-            let keywordLinks = [];
-            if (query.includes("blog") || query.includes("vivi")) {
-                keywordLinks.push({
-                    title: "/diary/ - the webmaster is thinking",
-                    url: "/diary",
-                    snippet: "vivi's 2024-2026 diary :3"
-                });
-            }
-            if (query.includes("blog") || query.includes("philosophy") || query.includes("vivi")) {
-                keywordLinks.push({
-                    title: "FEED DA EGREGORE.",
-                    url: "/gen",
-                    snippet: ""
-                });
-            }
-            if (query.includes("music") || query.includes("blog") || query.includes("art")) {
-                keywordLinks.push({
-                    title: "Music blog",
-                    url: "/fm",
-                    snippet: "billions must scrobble"
-                });
-            }
-            if (query.includes("music") || query.includes("cd")) {
-                keywordLinks.push({
-                    title: "Vivi's pretty small realy cool CD collection",
-                    url: "/cd",
-                    snippet: "my CD collection catalogued"
-                });
-            }
-            if (query.includes("music") || query.includes("shrine")) {
-                keywordLinks.push({
-                    title: "STRAWBERRY SWITCHBLADE",
-                    url: "/shrine/ss",
-                    snippet: "DOOMED YURI :( IT'S SO CLEAR THAT ALL WE HAVE NOW ARE OUR THOUGHTS OF YESTERDAY"
-                });
-            }
-            if (query.includes("music") || query.includes("vivi")) {
-                keywordLinks.push({
-                    title: "CAT'S CRADLE",
-                    url: "/mu",
-                    snippet: ""
-                });
-            }
-            if (query.includes("philosophy") || query.includes("art") || query.includes("blog")) {
-                keywordLinks.push({
-                    title: "stagnation vs decay vs creation ...= the same?",
-                    url: "/pain",
-                    snippet: "mental breakdown"
-                });
-            }
-            if (query.includes("blog") || query.includes("angel") || query.includes("suicide")) {
-                keywordLinks.push({
-                    title: "hospital",
-                    url: "https://clover30330930.github.io/hopital",
-                    snippet: "dont expect any help, for all the beds are full...but if you're a visitor, by all means, we could use those..."
-                });
-            }
-          if (query.includes("philosophy") || query.includes("tech")) {
-                keywordLinks.push({
-                    title: "DIGITAL SOLIPSISM FOR DUMMIES:RECLAIM YOUR ECHO CHAMBER",
-                    url: "/ryec",
-                    snippet: "one closed feedback loop now for half the price! ARCHONS WEARING GORILLA GLA$$: THE DEMIURGE IS AN ALGORITHMIC FEED. PROLOGUE: THE SILICON COCKPIT ANCIEN..."
-                });
-            }
-            if (query.includes("philosophy") || query.includes("shrine") || query.includes("lain") || query.includes("art") || query.includes("god") || query.includes("tech") || query.includes("religion")) {
-                keywordLinks.push({
-                    title: "ENTER WIRED // Serial Experiments Lain",
-                    url: "/shrine/lain",
-                    snippet: "What does it take to make you realize digital deities are real? Do you really not know masturbating to your Touhous is a worship ritual manifesting their existence libidinally? The suspension of disbelief..."
-                });
-            }
-            if (query.includes("game") || query.includes("shrine") || query.includes("music") || query.includes("vocaloid") || query.includes("project diva") || query.includes("rhythm game")) {
-                keywordLinks.push({
-                    title: "PROJECT DIVA",
-                    url: "/shrine/pd",
-                    snippet: "experience with my fav rhythm game"
-                });
-            }
-            if (query.includes("friend") || query.includes("shrine") || query.includes("death") || query.includes("love") || query.includes("cj")) {
-                keywordLinks.push({
-                    title: "CATHERINE JANE MOFFETT 2007-2024",
-                    url: "/cj",
-                    snippet: "ILYSM<33333"
-                });
-            }
+            let matchedExternalLinks = EXTERNAL_LINKS.filter(link => {
+                let searchStr = (link.title + " " + link.url + " " + link.snippet + " " + (link.keywords || "")).toLowerCase();
+                return queryTokens.every(token => searchStr.includes(token));
+            });
 
-            let totalCount = matchedKeys.length + keywordLinks.length;
+            let totalCount = matchedKeys.length + matchedExternalLinks.length;
             document.getElementById('result-count').innerText = totalCount;
 
             if (totalCount === 0) {
@@ -362,8 +351,8 @@
                 container.appendChild(item);
             }
 
-            for(let k=0; k < keywordLinks.length; k++) {
-                let linkData = keywordLinks[k];
+            for(let k=0; k < matchedExternalLinks.length; k++) {
+                let linkData = matchedExternalLinks[k];
 
                 let item = document.createElement('div');
                 item.className = 'window-panel result-item';
@@ -389,7 +378,7 @@
             document.getElementById('results-view').style.display = 'none';
             document.getElementById('top-bar').style.display = 'flex';
             document.getElementById('page-view').style.display = 'block';
-            
+
             document.getElementById('page-view').style.backgroundImage = 'none';
             document.getElementById('page-view').innerHTML = pageData.content;
             document.getElementById('top-search-input').value = pageData.url;
@@ -433,6 +422,7 @@
             let c = document.getElementById('thought-canvas');
             thoughtCtx.clearRect(0, 0, c.width, c.height);
 
+            // grid
             thoughtCtx.strokeStyle = '#e0e0e0';
             thoughtCtx.lineWidth = 1;
             for (let x = 0; x < c.width; x += 50) {
@@ -448,18 +438,33 @@
                 thoughtCtx.stroke();
             }
 
-            
-            let points = Math.floor(Math.random() * 71) + 30;
+            let points = Math.floor(Math.random() * 40) + 30;
             let step = c.width / (points - 1);
             let coords = [];
 
+            // occassional chaos lol
+            let isChaotic = Math.random() < 0.15;
+            let currentY = c.height / 2;
+
             for (let i = 0; i < points; i++) {
                 let x = i * step;
-                let y = 30 + Math.random() * (c.height - 60);
+                let y;
+
+                if (isChaotic) {
+                    y = 30 + Math.random() * (c.height - 60);
+                } else {
+                    // Smoothed walk pattern with small variances
+                    let delta = (Math.random() - 0.5) * 35;
+                    currentY += delta;
+                    if (currentY < 30) currentY = 30 + Math.random() * 15;
+                    if (currentY > c.height - 30) currentY = c.height - 30 - Math.random() * 15;
+                    y = currentY;
+                }
+
                 coords.push({x, y});
             }
 
-            //  graph line
+            // graph line
             thoughtCtx.strokeStyle = '#000080';
             thoughtCtx.lineWidth = 1.5;
             thoughtCtx.beginPath();
@@ -468,14 +473,6 @@
                 thoughtCtx.lineTo(coords[i].x, coords[i].y);
             }
             thoughtCtx.stroke();
-
-            // data points
-            for (let i = 0; i < coords.length; i++) {
-                thoughtCtx.fillStyle = '#ff0000';
-                thoughtCtx.beginPath();
-                thoughtCtx.arc(coords[i].x, coords[i].y, 2, 0, 2 * Math.PI);
-                thoughtCtx.fill();
-            }
         };
 
         window.clearThoughts = function() {
@@ -484,7 +481,7 @@
             thoughtCtx.clearRect(0, 0, c.width, c.height);
         };
 
-        // evnt bindings
+        // event bindings
         document.getElementById('home-search-btn-action').addEventListener('click', () => triggerSearch('home'));
         document.getElementById('top-search-btn').addEventListener('click', () => triggerSearch('top'));
         document.getElementById('home-logo-btn').addEventListener('click', goHome);
